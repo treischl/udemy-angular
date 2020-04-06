@@ -1,1 +1,17 @@
-<p>recipe-item works!</p>
+<a
+  *ngIf="recipe !== null"
+  href="#"
+  class="list-group-item d-flex list-group-item-action"
+  (click)="onSelected()"
+>
+  <div class="mr-auto">
+    <h4>{{ recipe.name }}</h4>
+    <p class="list-group-item-text">{{ recipe.description }}</p>
+  </div>
+  <img
+    [src]="recipe.imagePath"
+    alt="{{ recipe.name }}"
+    class="img-fluid"
+    style="max-height: 50px;"
+  />
+</a>
