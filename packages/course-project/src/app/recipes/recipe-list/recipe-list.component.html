@@ -6,22 +6,10 @@
 <hr />
 <div class="row">
   <div class="col-12 list-group">
-    <a
-      href="#"
-      class="list-group-item d-flex list-group-item-action"
+    <app-recipe-item
       *ngFor="let recipe of recipes"
-    >
-      <div class="mr-auto">
-        <h4>{{ recipe.name }}</h4>
-        <p class="list-group-item-text">{{ recipe.description }}</p>
-      </div>
-      <img
-        [src]="recipe.imagePath"
-        alt="{{ recipe.name }}"
-        class="img-fluid"
-        style="max-height: 50px;"
-      />
-    </a>
-    <app-recipe-item></app-recipe-item>
+      [recipe]="recipe"
+      (recipeSelected)="onRecipedSelected(recipe)"
+    ></app-recipe-item>
   </div>
 </div>

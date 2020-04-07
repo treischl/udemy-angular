@@ -6,9 +6,13 @@ import { Component } from "@angular/core";
   styleUrls: ["./app.component.css"],
 })
 export class AppComponent {
-  loadedFeature = "recipe";
+  gameTicks: number[] = [];
 
-  onNavigate(feature: string) {
-    this.loadedFeature = feature;
+  onGameStarted() {
+    this.gameTicks.length = 0;
+  }
+
+  onGameInProgress(tick: number) {
+    this.gameTicks.push(tick);
   }
 }

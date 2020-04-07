@@ -1,0 +1,15 @@
+<div class="col-xs-12">
+  <div class="btn-group">
+    <button
+      role="button"
+      class="btn btn-success"
+      (click)="onStartGame()"
+      [disabled]="interval >= 0"
+    >
+      Start Game
+    </button>
+    <button role="button" class="btn btn-danger" (click)="onEndGame()" [disabled]="interval === -1">
+      End Game
+    </button>
+  </div>
+</div>
