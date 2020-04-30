@@ -24,11 +24,17 @@
         Manage Recipe
       </button>
       <div class="dropdown-menu" aria-labelledby="recipeDetailBtnGrp">
-        <button class="dropdown-item" (click)="onAddToShoppingList()">
+        <a
+          class="dropdown-item"
+          (click)="onAddToShoppingList()"
+          style="cursor: pointer;"
+        >
           To Shopping List
-        </button>
-        <a href="#" class="dropdown-item">Edit Recipe</a>
-        <a href="#" class="dropdown-item">Delete Recipe</a>
+        </a>
+        <a routerLink="edit" style="cursor: pointer;" class="dropdown-item">
+          Edit Recipe
+        </a>
+        <a style="cursor: pointer;" class="dropdown-item">Delete Recipe</a>
       </div>
     </div>
   </div>

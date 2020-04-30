@@ -1,8 +1,9 @@
 <a
   *ngIf="recipe !== null"
-  href="#"
+  style="cursor: pointer;"
   class="list-group-item d-flex list-group-item-action"
-  (click)="onSelected()"
+  [routerLink]="[index]"
+  routerLinkActive="active"
 >
   <div class="mr-auto">
     <h4>{{ recipe.name }}</h4>
