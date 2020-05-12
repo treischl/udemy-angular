@@ -5,7 +5,8 @@
     <div class="list-group">
       <button
         class="list-group-item list-group-item-action"
-        *ngFor="let ingredient of ingredients"
+        *ngFor="let ingredient of ingredients; let i = index"
+        (click)="onEditItem(i)"
       >
         {{ ingredient.name }} ({{ ingredient.amount }})
       </button>
