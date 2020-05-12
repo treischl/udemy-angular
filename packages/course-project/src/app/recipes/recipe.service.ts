@@ -34,4 +34,16 @@ export class RecipeService {
   public addIngredientsToShoppingList(recipe: Recipe) {
     this.shoppingListService.addIngredients(recipe.ingredients);
   }
+
+  addRecipe(recipe: Recipe) {
+    this._recipes.push(recipe);
+  }
+
+  updateRecipe(index: number, newRecipe: Recipe) {
+    this._recipes[index] = newRecipe;
+  }
+
+  deleteRecipe(index: number) {
+    this._recipes.splice(index, 1);
+  }
 }

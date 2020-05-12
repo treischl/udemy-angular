@@ -1,8 +1,8 @@
 import { Component, OnInit } from "@angular/core";
+import { ActivatedRoute } from "@angular/router";
 
 import { Recipe } from "../recipe.model";
 import { RecipeService } from "../recipe.service";
-import { ActivatedRoute } from "@angular/router";
 
 @Component({
   selector: "app-recipe-detail",
@@ -27,5 +27,9 @@ export class RecipeDetailComponent implements OnInit {
 
   public onAddToShoppingList() {
     this.recipeService.addIngredientsToShoppingList(this.recipe);
+  }
+
+  public onDeleteRecipe() {
+    this.recipeService.deleteRecipe(this.id);
   }
 }
