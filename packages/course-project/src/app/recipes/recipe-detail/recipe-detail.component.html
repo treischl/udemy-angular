@@ -34,7 +34,13 @@
         <a routerLink="edit" style="cursor: pointer;" class="dropdown-item">
           Edit Recipe
         </a>
-        <a style="cursor: pointer;" class="dropdown-item">Delete Recipe</a>
+        <a
+          style="cursor: pointer;"
+          class="dropdown-item"
+          (click)="onDeleteRecipe()"
+          routerLink=".."
+          >Delete Recipe</a
+        >
       </div>
     </div>
   </div>
