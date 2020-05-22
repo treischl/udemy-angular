@@ -1,7 +1,12 @@
 import { Injectable } from "@angular/core";
-import { HttpClient } from "@angular/common/http";
+import {
+  HttpClient,
+  HttpHeaders,
+  HttpParams,
+  HttpEventType,
+} from "@angular/common/http";
 import { Subject, throwError } from "rxjs";
-import { map, catchError } from "rxjs/operators";
+import { map, catchError, tap } from "rxjs/operators";
 
 import { Post } from "./post.model";
 
@@ -15,7 +20,13 @@ export class PostsService {
 
   createAndStorePosts(title: string, content: string) {
     return this.http
-      .post<{ name: string }>(postsUrl, { title, content })
+      .post<{ name: string }>(
+        postsUrl,
+        { title, content },
+        {
+          observe: "response",
+        },
+      )
       .pipe(
         catchError((errorResponse) => {
           this.error.next(errorResponse.message);
@@ -25,22 +36,44 @@ export class PostsService {
   }
 
   fetchPosts() {
-    return this.http.get<{ [key: string]: Post }>(postsUrl).pipe(
-      map((responseData) =>
-        Object.keys(responseData || {}).map((key) => ({
-          ...responseData[key],
-          id: key,
-        })),
-      ),
-      catchError((errorResponse) => {
-        // Send to analytics server, then...
-        this.error.next(errorResponse.message);
-        return throwError(errorResponse);
-      }),
-    );
+    return this.http
+      .get<{ [key: string]: Post }>(postsUrl, {
+        headers: new HttpHeaders({
+          "Custom-Header": "Hello",
+        }),
+        params: new HttpParams().set("print", "pretty").set("custom", "key"),
+        responseType: "json",
+      })
+      .pipe(
+        map((responseData) =>
+          Object.keys(responseData || {}).map((key) => ({
+            ...responseData[key],
+            id: key,
+          })),
+        ),
+        catchError((errorResponse) => {
+          // Send to analytics server, then...
+          this.error.next(errorResponse.message);
+          return throwError(errorResponse);
+        }),
+      );
   }
 
   clearPosts() {
-    return this.http.delete(postsUrl);
+    return this.http
+      .delete(postsUrl, {
+        observe: "events",
+        responseType: "text",
+      })
+      .pipe(
+        tap((event) => {
+          if (event.type === HttpEventType.Sent) {
+            // ...
+          }
+          if (event.type === HttpEventType.Response) {
+            console.log(event);
+          }
+        }),
+      );
   }
 }

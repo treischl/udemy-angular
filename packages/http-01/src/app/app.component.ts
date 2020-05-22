@@ -32,7 +32,9 @@ export class AppComponent implements OnInit, OnDestroy {
     // Send Http request
     this.postsService
       .createAndStorePosts(title, content)
-      .subscribe(({ name: id }) => {
+      .subscribe((response) => {
+        console.log(response);
+        const { name: id } = response.body;
         this.loadedPosts.push({ title, content, id });
       });
   }
