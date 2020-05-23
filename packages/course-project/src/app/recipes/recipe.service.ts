@@ -1,27 +1,18 @@
 import { Injectable } from "@angular/core";
 
 import { Recipe } from "./recipe.model";
-import { Ingredient } from "../shared/ingredient.model";
+import { DataStorageService } from "../shared/data-storage.service";
 import { ShoppingListService } from "../shopping-list/shopping-list.service";
+import { tap } from "rxjs/operators";
 
 @Injectable({ providedIn: "root" })
 export class RecipeService {
-  private _recipes: Recipe[] = [
-    new Recipe(
-      "Tasy Schnitzel",
-      "A super-tasy Schnitzel - just awesome!",
-      "https://upload.wikimedia.org/wikipedia/commons/7/72/Schnitzel.JPG",
-      [new Ingredient("Meat", 1), new Ingredient("French Fries", 20)],
-    ),
-    new Recipe(
-      "Big Fat Burger",
-      "What else you need to say?",
-      "https://upload.wikimedia.org/wikipedia/commons/b/be/Burger_King_Angus_Bacon_%26_Cheese_Steak_Burger.jpg",
-      [new Ingredient("Buns", 2), new Ingredient("Meat", 1)],
-    ),
-  ];
+  private _recipes: Recipe[] = [];
 
-  constructor(private shoppingListService: ShoppingListService) {}
+  constructor(
+    private shoppingListService: ShoppingListService,
+    private dataStorageService: DataStorageService,
+  ) {}
 
   public get recipes() {
     return this._recipes.slice();
@@ -45,5 +36,17 @@ export class RecipeService {
 
   deleteRecipe(index: number) {
     this._recipes.splice(index, 1);
+  }
+
+  loadRecipes() {
+    return this.dataStorageService.fetchRecipes().pipe(
+      tap((recipes) => {
+        this._recipes = recipes;
+      }),
+    );
+  }
+
+  saveRecipes() {
+    this.dataStorageService.storeRecipes(this._recipes);
   }
 }
