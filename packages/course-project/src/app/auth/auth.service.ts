@@ -1,11 +1,11 @@
 import { Injectable } from "@angular/core";
-import { HttpClient } from "@angular/common/http";
+import { HttpClient, HttpErrorResponse } from "@angular/common/http";
 import { throwError } from "rxjs";
 import { catchError } from "rxjs/operators";
 
 import { environment } from "../../environments/environment";
 
-interface AuthResponseData {
+export interface SignupResponseData {
   idToken: string;
   email: string;
   refreshToken: string;
@@ -13,36 +13,53 @@ interface AuthResponseData {
   localId: string;
 }
 
+interface LoginResponseData extends SignupResponseData {
+  registered: boolean;
+}
+
 @Injectable({ providedIn: "root" })
 export class AuthService {
   constructor(private http: HttpClient) {}
 
   signup(email: string, password: string) {
-    return this.http.post<AuthResponseData>(
-      `https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${environment.firebaseApiKey}`,
-      {
-        email,
-        password,
-        returnSecureToken: true,
-      },
+    return this.http
+      .post<SignupResponseData>(
+        `https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${environment.firebaseApiKey}`,
+        {
+          email,
+          password,
+          returnSecureToken: true,
+        },
       )
-      .pipe(
-        catchError((errorResp) => {
-          let errMsg: string;
-
-          switch (errorResp?.error?.error?.message) {
-            case "EMAIL_EXISTS":
-              errMsg = "This email already exists";
-              break;
-            default:
-              errMsg = "An unknown error occurred";
-              break;
-          }
-
-          return throwError(errMsg);
-        }),
-      );
+      .pipe(catchError(this.handleError));
   }
-    );
+
+  login(email: string, password: string) {
+    return this.http
+      .post<LoginResponseData>(
+        `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${environment.firebaseApiKey}`,
+        {
+          email,
+          password,
+          returnSecureToken: true,
+        },
+      )
+      .pipe(catchError(this.handleError));
+  }
+
+  private handleError(errorResp: HttpErrorResponse) {
+    const getErrorText = (errMsg: string) => {
+      switch (errMsg) {
+        case "EMAIL_EXISTS":
+          return "This email already exists.";
+        case "EMAIL_NOT_FOUND":
+          return "This email does not exist.";
+        case "INVALID_PASSWORD":
+          return "Incorrect email/password combination.";
+        default:
+          return "An unknown error occurred";
+      }
+    };
+    return throwError(getErrorText(errorResp?.error?.error?.message));
   }
 }

@@ -1,7 +1,7 @@
 import { Component } from "@angular/core";
 import { NgForm } from "@angular/forms";
 
-import { AuthService } from "./auth.service";
+import { AuthService, SignupResponseData } from "./auth.service";
 
 @Component({
   selector: "app-auth",
@@ -26,21 +26,29 @@ export class AuthComponent {
 
     this.isLoading = true;
     if (this.isLoginMode) {
-      // ...
+      this.authService
+        .login(email, password)
+        .subscribe(...this.handleNextAuthResponse());
     } else {
-      this.authService.signup(email, password).subscribe(
-        (respData) => {
-          console.log(respData);
-          this.isLoading = false;
-        },
-      (errorMessage) => {
-        console.log(errorMessage);
-        this.error = errorMessage;
-          this.isLoading = false;
-        },
-      );
+      this.authService
+        .signup(email, password)
+        .subscribe(...this.handleNextAuthResponse());
     }
 
     form.reset();
+  }
+
+  private handleNextAuthResponse<TRespData extends SignupResponseData>() {
+    return [
+      (respData: TRespData) => {
+        console.log(respData);
+        this.isLoading = false;
+      },
+      (errorMessage) => {
+        console.log(errorMessage);
+        this.error = errorMessage;
+        this.isLoading = false;
+      },
+    ];
   }
 }
