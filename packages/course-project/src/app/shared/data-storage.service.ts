@@ -3,12 +3,13 @@ import { Injectable } from "@angular/core";
 import { map } from "rxjs/operators";
 
 import { Recipe } from "../recipes/recipe.model";
+import { AuthService } from "../auth/auth.service";
 
 const baseUrl = "https://udemy-ng-course-project-1a1a1.firebaseio.com";
 
 @Injectable({ providedIn: "root" })
 export class DataStorageService {
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private authService: AuthService) {}
 
   storeRecipes(recipes: Recipe[]) {
     this.http.put(`${baseUrl}/recipes.json`, recipes).subscribe((response) => {
