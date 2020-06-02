@@ -53,4 +53,8 @@ export class AuthComponent {
       },
     ];
   }
+
+  onHandleError() {
+    this.error = null;
+  }
 }
