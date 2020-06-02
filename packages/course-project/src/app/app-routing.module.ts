@@ -28,6 +28,7 @@ const appRoutes: Routes = [
         resolve: [RecipesResolverService],
       },
     ],
+    resolve: [RecipesResolverService],
   },
   { path: "shopping-list", component: ShoppingListComponent },
   { path: "auth", component: AuthComponent },
