@@ -11,6 +11,7 @@
   },
   "private": true,
   "dependencies": {
+    "@ngrx/store": "^9.2.0",
     "bootstrap": "^4.4.1"
   },
   "devDependencies": {}
