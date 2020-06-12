@@ -4,8 +4,8 @@ import { tap } from "rxjs/operators";
 
 import { Recipe } from "./recipe.model";
 import { DataStorageService } from "../shared/data-storage.service";
-import { Ingredient } from "../shared/ingredient.model";
 import * as ShoppingListActions from "../shopping-list/store/shopping-list.actions";
+import * as fromShoppingList from "../shopping-list/store/shopping-list.reducer";
 
 @Injectable({ providedIn: "root" })
 export class RecipeService {
@@ -13,7 +13,7 @@ export class RecipeService {
 
   constructor(
     private dataStorageService: DataStorageService,
-    private store: Store<{ shoppingList: { ingredients: Ingredient[] } }>,
+    private store: Store<fromShoppingList.AppState>,
   ) {}
 
   public get recipes() {
