@@ -7,10 +7,6 @@ export type State = {
   editedIngredientIndex: number;
 };
 
-export type AppState = {
-  shoppingList: State;
-};
-
 const initialState: State = {
   ingredients: [new Ingredient("Apples", 5), new Ingredient("Tomatoes", 10)],
   editedIngredient: null,
