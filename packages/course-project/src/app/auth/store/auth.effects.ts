@@ -7,6 +7,8 @@ import { switchMap, catchError, map, tap } from "rxjs/operators";
 import * as AuthActions from "./auth.actions";
 import { environment } from "../../../environments/environment";
 import { of } from "rxjs";
+import { User } from "../user.model";
+import { AuthService } from "../auth.service";
 
 interface SignupResponseData {
   idToken: string;
@@ -20,14 +22,31 @@ interface LoginResponseData extends SignupResponseData {
   registered: boolean;
 }
 
-function handleAuthSuccess(respData: SignupResponseData) {
+type UserData = {
+  email: string;
+  userId: string;
+  token: string;
+  exprDate: string;
+};
+
+function handleAuthSuccess({
+  email,
+  localId: userId,
+  idToken: token,
+  expiresIn,
+}: SignupResponseData) {
+  const expirationDate = new Date(
+    new Date().getTime() + Number(expiresIn) * 1000,
+  );
+  localStorage.setItem(
+    "userData",
+    JSON.stringify({ email, userId, token, expirationDate }),
+  );
   return new AuthActions.AuthenticateSuccess({
-    email: respData.email,
-    userId: respData.localId,
-    token: respData.idToken,
-    expirationDate: new Date(
-      new Date().getTime() + Number(respData.expiresIn) * 1000,
-    ),
+    email,
+    userId,
+    token,
+    expirationDate,
   });
 }
 
@@ -65,7 +84,13 @@ export class AuthEffects {
             returnSecureToken: true,
           },
         )
-        .pipe(map(handleAuthSuccess), catchError(handleAuthFail)),
+        .pipe(
+          tap((respData) => {
+            this.authService.setLogoutTimer(Number(respData.expiresIn) * 1000);
+          }),
+          map(handleAuthSuccess),
+          catchError(handleAuthFail),
+        ),
     ),
   );
 
@@ -81,15 +106,53 @@ export class AuthEffects {
             returnSecureToken: true,
           },
         )
-        .pipe(map(handleAuthSuccess), catchError(handleAuthFail)),
+        .pipe(
+          tap((respData) => {
+            this.authService.setLogoutTimer(Number(respData.expiresIn) * 1000);
+          }),
+          map(handleAuthSuccess),
+          catchError(handleAuthFail),
+        ),
     ),
   );
 
   @Effect({ dispatch: false })
   authRedirect = this.actions$.pipe(
-    ofType(AuthActions.AUTHENTICATE_SUCCESS, AuthActions.LOGOUT),
+    ofType(AuthActions.AUTHENTICATE_SUCCESS),
     tap(() => {
       this.router.navigate(["/"]);
+    }),
+  );
+
+  @Effect()
+  autoLogin = this.actions$.pipe(
+    ofType(AuthActions.AUTO_LOGIN),
+    map(() => {
+      const { email, userId, token, exprDate }: UserData =
+        JSON.parse(localStorage.getItem("userData")) || {};
+      const savedUser = new User(email, userId, token, new Date(exprDate));
+      if (Boolean(savedUser.token)) {
+        this.authService.setLogoutTimer(
+          new Date(exprDate).getTime() - new Date().getTime(),
+        );
+        return new AuthActions.AuthenticateSuccess({
+          email,
+          userId,
+          token,
+          expirationDate: new Date(exprDate),
+        });
+      }
+      return { type: "DUMMY" };
+    }),
+  );
+
+  @Effect({ dispatch: false })
+  authLogout = this.actions$.pipe(
+    ofType(AuthActions.LOGOUT),
+    tap(() => {
+      this.authService.clearLogoutTimer();
+      localStorage.removeItem("userData");
+      this.router.navigate(["/auth"]);
     }),
   );
 
@@ -97,5 +160,6 @@ export class AuthEffects {
     private actions$: Actions,
     private http: HttpClient,
     private router: Router,
+    private authService: AuthService,
   ) {}
 }
