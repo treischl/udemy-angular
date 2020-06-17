@@ -2,11 +2,11 @@ import { HttpClient, HttpErrorResponse } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { Router } from "@angular/router";
 import { Actions, ofType, Effect } from "@ngrx/effects";
+import { of } from "rxjs";
 import { switchMap, catchError, map, tap } from "rxjs/operators";
 
 import * as AuthActions from "./auth.actions";
 import { environment } from "../../../environments/environment";
-import { of } from "rxjs";
 import { User } from "../user.model";
 import { AuthService } from "../auth.service";
 
