@@ -3,7 +3,7 @@ import { Injectable } from "@angular/core";
 import { Router } from "@angular/router";
 import { Actions, ofType, Effect } from "@ngrx/effects";
 import { of } from "rxjs";
-import { switchMap, catchError, map, tap } from "rxjs/operators";
+import { switchMap, catchError, map, tap, filter } from "rxjs/operators";
 
 import * as AuthActions from "./auth.actions";
 import { environment } from "../../../environments/environment";
@@ -47,6 +47,7 @@ function handleAuthSuccess({
     userId,
     token,
     expirationDate,
+    redirect: true,
   });
 }
 
@@ -118,7 +119,8 @@ export class AuthEffects {
 
   @Effect({ dispatch: false })
   authRedirect = this.actions$.pipe(
-    ofType(AuthActions.AUTHENTICATE_SUCCESS),
+    ofType<AuthActions.AuthenticateSuccess>(AuthActions.AUTHENTICATE_SUCCESS),
+    filter((authSuccessAction) => authSuccessAction.payload.redirect),
     tap(() => {
       this.router.navigate(["/"]);
     }),
@@ -145,6 +147,7 @@ export class AuthEffects {
           userId,
           token,
           expirationDate: new Date(expirationDate),
+          redirect: false,
         });
       }
       return { type: "DUMMY" };
