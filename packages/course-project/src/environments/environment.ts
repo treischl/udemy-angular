@@ -7,6 +7,7 @@ import { Secrets } from "./secrets";
 
 export const environment = {
   production: false,
+  firebaseApiUrl: "https://udemy-ng-course-project-1a1a1.firebaseio.com",
   ...(secrets as Secrets),
 };
 

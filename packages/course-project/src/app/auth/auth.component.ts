@@ -3,36 +3,48 @@ import {
   ComponentFactoryResolver,
   ViewChild,
   OnDestroy,
+  OnInit,
 } from "@angular/core";
 import { NgForm } from "@angular/forms";
-import { Router } from "@angular/router";
+import { Store } from "@ngrx/store";
+import { Subscription } from "rxjs";
 
-import { AuthService, SignupResponseData } from "./auth.service";
 import { AlertComponent } from "../shared/alert/alert.component";
 import { PlaceholderDirective } from "../shared/placeholder.directive";
-import { Subscription } from "rxjs";
+import * as fromApp from "../store/app.reducer";
+import * as AuthActions from "./store/auth.actions";
 
 @Component({
   selector: "app-auth",
   templateUrl: "./auth.component.html",
   styleUrls: ["./auth.component.css"],
 })
-export class AuthComponent implements OnDestroy {
+export class AuthComponent implements OnInit, OnDestroy {
   isLoginMode = true;
   isLoading = false;
   @ViewChild(PlaceholderDirective, { static: false })
   alertHost: PlaceholderDirective;
 
   private closeSub: Subscription;
+  private storeSub: Subscription;
 
   constructor(
-    private authService: AuthService,
-    private router: Router,
     private componentFactoryResolver: ComponentFactoryResolver,
+    private store: Store<fromApp.AppState>,
   ) {}
+
+  ngOnInit() {
+    this.storeSub = this.store.select("auth").subscribe((authState) => {
+      this.isLoading = authState.loading;
+      if (Boolean(authState.authError)) {
+        this.showErrorAlert(authState.authError);
+      }
+    });
+  }
 
   ngOnDestroy() {
     this.closeSub?.unsubscribe();
+    this.storeSub?.unsubscribe();
   }
 
   onSwitchMode() {
@@ -46,31 +58,12 @@ export class AuthComponent implements OnDestroy {
 
     this.isLoading = true;
     if (this.isLoginMode) {
-      this.authService
-        .login(email, password)
-        .subscribe(...this.handleNextAuthResponse());
+      this.store.dispatch(AuthActions.loginStart({ email, password }));
     } else {
-      this.authService
-        .signup(email, password)
-        .subscribe(...this.handleNextAuthResponse());
+      this.store.dispatch(AuthActions.signupStart({ email, password }));
     }
 
     form.reset();
-  }
-
-  private handleNextAuthResponse<TRespData extends SignupResponseData>() {
-    return [
-      (respData: TRespData) => {
-        console.log(respData);
-        this.isLoading = false;
-        this.router.navigate(["/recipes"]);
-      },
-      (errorMessage) => {
-        console.log(errorMessage);
-        this.showErrorAlert(errorMessage);
-        this.isLoading = false;
-      },
-    ];
   }
 
   private showErrorAlert(message: string) {
