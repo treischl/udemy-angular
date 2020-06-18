@@ -1,8 +1,7 @@
-import * as RecipeActions from "./recipe.actions";
+import { createReducer, on, Action } from "@ngrx/store";
+
 import { Recipe } from "../recipe.model";
-import { addRecipeFn } from "./add-recipe.action";
-import { updateRecipeFn } from "./update-recipe.action";
-import { deleteRecipeFn } from "./delete-recipe.action";
+import * as RecipeActions from "./recipe.actions";
 
 export type State = {
   recipes: Recipe[];
@@ -12,23 +11,33 @@ const initialState: State = {
   recipes: [],
 };
 
-export function recipeReducer(
-  state = initialState,
-  action: RecipeActions.RecipeActions,
-) {
-  switch (action.type) {
-    case RecipeActions.SET_RECIPES:
-      return {
-        ...state,
-        recipes: [...action.payload],
-      };
-    case RecipeActions.ADD_RECIPE:
-      return addRecipeFn(state, action);
-    case RecipeActions.UPDATE_RECIPE:
-      return updateRecipeFn(state, action);
-    case RecipeActions.DELETE_RECIPE:
-      return deleteRecipeFn(state, action);
-    default:
-      return state;
-  }
+const _recipeReducer = createReducer(
+  initialState,
+  on(RecipeActions.setRecipes, (state, action) => ({
+    ...state,
+    recipes: action.recipes,
+  })),
+  on(RecipeActions.addRecipe, (state, action) => ({
+    ...state,
+    recipes: [...state.recipes, action.recipe],
+  })),
+  on(RecipeActions.updateRecipe, (state, action) => ({
+    ...state,
+    recipes: [
+      ...state.recipes.slice(0, action.index),
+      { ...action.newRecipe },
+      ...state.recipes.slice(action.index + 1),
+    ],
+  })),
+  on(RecipeActions.deleteRecipe, (state, action) => ({
+    ...state,
+    recipes: [
+      ...state.recipes.slice(0, action.index),
+      ...state.recipes.slice(action.index + 1),
+    ],
+  })),
+);
+
+export function recipeReducer(state: State, action: Action) {
+  return _recipeReducer(state, action);
 }

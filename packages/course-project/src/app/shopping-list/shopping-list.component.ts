@@ -2,9 +2,9 @@ import { Component, OnInit } from "@angular/core";
 import { Store } from "@ngrx/store";
 import { Observable } from "rxjs";
 
+import * as fromApp from "../store/app.reducer";
 import { Ingredient } from "../shared/ingredient.model";
 import * as ShoppingListActions from "./store/shopping-list.actions";
-import * as fromApp from "../store/app.reducer";
 
 @Component({
   selector: "app-shopping-list",
@@ -17,7 +17,7 @@ export class ShoppingListComponent implements OnInit {
   constructor(private store: Store<fromApp.AppState>) {}
 
   onEditItem(index: number) {
-    this.store.dispatch(new ShoppingListActions.StartEdit(index));
+    this.store.dispatch(ShoppingListActions.startEdit({ index }));
   }
 
   ngOnInit(): void {

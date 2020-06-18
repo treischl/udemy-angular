@@ -1,57 +1,27 @@
-import { Action } from "@ngrx/store";
+import { createAction, props } from "@ngrx/store";
 
-export const LOGIN_START = "[Auth] LOGIN_START";
-export const AUTHENTICATE_SUCCESS = "[Auth] AUTHENTICATE_SUCCESS";
-export const AUTHENTICATE_FAIL = "[Auth] AUTHENTICATE_FAIL";
-export const LOGOUT = "[Auth] LOGOUT";
-export const SIGNUP_START = "[Auth] SIGNUP_START";
-export const CLEAR_ERROR = "[Auth] CLEAR_ERROR";
-export const AUTO_LOGIN = "[Auth] AUTO_LOGIN";
-
-export class AuthenticateSuccess implements Action {
-  readonly type = AUTHENTICATE_SUCCESS;
-
-  constructor(
-    public payload: {
-      email: string;
-      userId: string;
-      token: string;
-      expirationDate: Date;
-      redirect: boolean;
-    },
-  ) {}
-}
-
-export class Logout implements Action {
-  readonly type = LOGOUT;
-}
-
-export class LoginStart implements Action {
-  readonly type = LOGIN_START;
-
-  constructor(public payload: { email: string; password: string }) {}
-}
-
-export class AuthenticateFail implements Action {
-  readonly type = AUTHENTICATE_FAIL;
-
-  constructor(public payload: string) {}
-}
-
-export class SignupStart implements Action {
-  readonly type = SIGNUP_START;
-
-  constructor(public payload: { email: string; password: string }) {}
-}
-
-export class AutoLogin implements Action {
-  readonly type = AUTO_LOGIN;
-}
-
-export type AuthActions =
-  | AuthenticateSuccess
-  | Logout
-  | LoginStart
-  | AuthenticateFail
-  | SignupStart
-  | AutoLogin;
+export const loginStart = createAction(
+  "[Auth] Login Start",
+  props<{ email: string; password: string }>(),
+);
+export const authenticateSuccess = createAction(
+  "[Auth] Authenticate Success",
+  props<{
+    email: string;
+    userId: string;
+    token: string;
+    expirationDate: Date;
+    redirect: boolean;
+  }>(),
+);
+export const authenticateFail = createAction(
+  "[Auth] Authenticate Fail",
+  props<{ errorMessage: string }>(),
+);
+export const logout = createAction("[Auth] Logout");
+export const signupStart = createAction(
+  "[Auth] Signup Start",
+  props<{ email: string; password: string }>(),
+);
+export const clearError = createAction("[Auth] Clear Error");
+export const autoLogin = createAction("[Auth] Auto Login");

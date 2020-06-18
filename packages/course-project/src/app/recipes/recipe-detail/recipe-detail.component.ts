@@ -3,10 +3,10 @@ import { ActivatedRoute } from "@angular/router";
 import { Store } from "@ngrx/store";
 import { map, switchMap, tap } from "rxjs/operators";
 
-import { Recipe } from "../recipe.model";
 import * as fromApp from "../../store/app.reducer";
-import * as RecipeActions from "../store/recipe.actions";
 import * as ShoppingListActions from "../../shopping-list/store/shopping-list.actions";
+import * as RecipeActions from "../store/recipe.actions";
+import { Recipe } from "../recipe.model";
 
 @Component({
   selector: "app-recipe-detail",
@@ -39,11 +39,13 @@ export class RecipeDetailComponent implements OnInit {
 
   public onAddToShoppingList() {
     this.store.dispatch(
-      new ShoppingListActions.AddIngredients(this.recipe.ingredients),
+      ShoppingListActions.addIngredients({
+        ingredients: this.recipe.ingredients,
+      }),
     );
   }
 
   public onDeleteRecipe() {
-    this.store.dispatch(new RecipeActions.DeleteRecipe(this.id));
+    this.store.dispatch(RecipeActions.deleteRecipe({ index: this.id }));
   }
 }
