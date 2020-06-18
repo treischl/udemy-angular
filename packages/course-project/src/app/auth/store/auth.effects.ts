@@ -26,7 +26,7 @@ type UserData = {
   email: string;
   userId: string;
   token: string;
-  exprDate: string;
+  expirationDate: string;
 };
 
 function handleAuthSuccess({
@@ -128,18 +128,23 @@ export class AuthEffects {
   autoLogin = this.actions$.pipe(
     ofType(AuthActions.AUTO_LOGIN),
     map(() => {
-      const { email, userId, token, exprDate }: UserData =
+      const { email, userId, token, expirationDate }: UserData =
         JSON.parse(localStorage.getItem("userData")) || {};
-      const savedUser = new User(email, userId, token, new Date(exprDate));
+      const savedUser = new User(
+        email,
+        userId,
+        token,
+        new Date(expirationDate),
+      );
       if (Boolean(savedUser.token)) {
         this.authService.setLogoutTimer(
-          new Date(exprDate).getTime() - new Date().getTime(),
+          new Date(expirationDate).getTime() - new Date().getTime(),
         );
         return new AuthActions.AuthenticateSuccess({
           email,
           userId,
           token,
-          expirationDate: new Date(exprDate),
+          expirationDate: new Date(expirationDate),
         });
       }
       return { type: "DUMMY" };
