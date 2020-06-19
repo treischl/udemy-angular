@@ -7,15 +7,24 @@
     "build": "ng build",
     "test": "ng test",
     "lint": "ng lint",
-    "e2e": "ng e2e"
+    "e2e": "ng e2e",
+    "dev:ssr": "ng run udemy-angular:serve-ssr",
+    "serve:ssr": "node dist/udemy-angular/server/main.js",
+    "build:ssr": "ng build --prod && ng run udemy-angular:server:production",
+    "prerender": "ng run udemy-angular:prerender"
   },
   "private": true,
   "dependencies": {
+    "@angular/platform-server": "^9.1.9",
     "@ngrx/effects": "^9.2.0",
     "@ngrx/store": "^9.2.0",
-    "bootstrap": "^4.4.1"
+    "@nguniversal/express-engine": "^9.1.1",
+    "bootstrap": "^4.4.1",
+    "express": "^4.15.2"
   },
   "devDependencies": {
-    "@ngrx/store-devtools": "^9.2.0"
+    "@ngrx/store-devtools": "^9.2.0",
+    "@nguniversal/builders": "^9.1.1",
+    "@types/express": "^4.17.0"
   }
 }
