@@ -2,7 +2,14 @@
   "name": "ng-pwa",
   "version": "0.0.0",
   "scripts": {
-    "start": "ng serve"
+    "start": "ng serve",
+    "start:prod": "ng build --prod && cd dist/ng-pwa && http-server -p 8081"
   },
-  "private": true
+  "private": true,
+  "dependencies": {
+    "@angular/service-worker": "^9.1.9"
+  },
+  "devDependencies": {
+    "http-server": "^0.12.3"
+  }
 }
